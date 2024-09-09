@@ -45,5 +45,5 @@ How to Use this query
 - Execute the queries individually or as needed depending on the operation you want to perform on the database.
 
 Contact
-For any questions or further details, feel free to reach out through GitHub Issues or contact me directly ediomoetesin40@gmai.com
+For any questions or further details, feel free to reach out through GitHub Issues or contact me directly ediomoetesin40@gmail.com
 
