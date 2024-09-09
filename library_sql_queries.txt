@@ -1,0 +1,59 @@
+
+---Find all books by a specific author (e.g., J.K. Rowling):
+SELECT b.title, a.firstname, a.lastname
+FROM books AS b
+JOIN authors a ON b.authorid = a.authorid
+WHERE LOWER(a.lastname) = 'rowling';
+
+-----List all books currently borrowed and their borrowers:
+SELECT br.firstname, br.lastname, b.title AS BookBorrowed
+FROM borrowers AS br
+JOIN loans AS l ON br.borrowerid = l.borrowerid
+JOIN books AS b ON l.bookid = b.bookid;
+
+----Get the number of books each author has written:
+SELECT a.firstname, a.lastname, COUNT(b.Bookid) AS NoofBooksWritten
+FROM authors a
+JOIN books b ON a.authorid = b.authorid
+GROUP BY a.firstname, a.lastname;
+
+-----Find all borrowers who have not returned their books yet:
+SELECT firstname, lastname, phone
+FROM borrowers b
+JOIN loans l ON b.borrowerid = l.borrowerid
+WHERE l.returndate IS NULL;
+
+-----Get the details of books published before a certain year (e.g., 1950):
+SELECT b.title, b.Genre, CONCAT(a.FirstName, ' ', a.LastName) AS AuthorName
+FROM Books b
+JOIN authors a ON b.authorid = a.authorid
+WHERE b.PublicationYear < 1950;
+
+----Find all authors who have written more than one book:
+SELECT a.firstname, a.lastname, COUNT(b.Bookid) AS NoofBooksWritten
+FROM authors a
+JOIN books b ON a.authorid = b.authorid
+GROUP BY a.firstname, a.lastname 
+HAVING COUNT(b.Bookid) > 1;
+
+---Retrieve the total number of books and borrowers:
+SELECT COUNT(b.bookid) AS TotalBooks, COUNT(l.Borrowerid) AS TotalBorrowers
+FROM books b
+JOIN loans l ON b.bookid = l.bookid;
+
+----Get a list of books and their availability status:
+SELECT B.Title, 
+CASE 
+WHEN L.BookID IS NULL THEN 'Available' 
+ELSE 'Not Available' 
+END AS AvailabilityStatus
+FROM Books b
+LEFT JOIN Loans l ON B.BookID = L.BookID 
+AND L.ReturnDate IS NULL;
+
+---Find books borrowed by a specific borrower:
+SELECT CONCAT(br.firstname, ' ', br.lastname) AS BorrowersName, b.title AS BookBorrowed, l.Loandate, l.returndate
+FROM borrowers AS br 
+JOIN loans AS l ON br.borrowerid = l.borrowerid
+JOIN books AS b ON l.bookid = b.bookid
+WHERE LOWER(br.firstname) = 'john';
