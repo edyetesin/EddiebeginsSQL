@@ -1,7 +1,7 @@
 Library Database SQL Queries
 
 Overview
-This repository contains SQL queries designed to interact with a library database. The database consists of four main tables: `Authors`, `Books`, `Borrowers`, and `Loans`. The provided queries cover various common use cases, such as retrieving book information, author statistics, borrower details, and book availability.
+This repository contains SQL queries designed to interact with a library database. The database consists of four main tables: Authors, Books, Borrowers, and Loans. The provided queries cover various common use cases, such as retrieving book information, author statistics, borrower details, and book availability.
 
 Database Structure
 The following tables are used in the queries:
