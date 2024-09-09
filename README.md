@@ -41,7 +41,7 @@ Here is a list of the queries included in the file:
    Retrieves the list of books borrowed by a particular borrower.
 
 How to Use this query
-- Load the SQL queries from the `library_sql_queries.txt` file into your SQL environment.
+- Load the SQL queries from the library_sql_queries.txt file into your SQL environment.
 - Execute the queries individually or as needed depending on the operation you want to perform on the database.
 
 Contact
