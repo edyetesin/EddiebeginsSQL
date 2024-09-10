@@ -1,0 +1,169 @@
+
+-- Select the converted sale date
+SELECT saledateconverted
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Update the 'saledate' field by converting it to date format
+UPDATE [portfolio projects]..NashvilleHousing
+SET saledate = CONVERT(date, saledate);
+
+-- Select the updated 'saledate'
+SELECT saledate
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Add a new column 'saledateconverted' to store converted sale dates
+ALTER TABLE [portfolio projects]..NashvilleHousing
+ADD saledateconverted date;
+
+-- Update the 'saledateconverted' column by converting 'saledate' to a date
+UPDATE [portfolio projects]..NashvilleHousing
+SET saledateconverted = CONVERT(date, saledate);
+
+-- Select the new 'saledateconverted' values
+SELECT saledateconverted
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Select all property addresses from the table
+SELECT propertyaddress
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Select all rows where the PropertyAddress is NULL
+SELECT *
+FROM [portfolio projects]..NashvilleHousing
+WHERE PropertyAddress IS NULL;
+
+-- Select all records ordered by 'ParcelID'
+SELECT *
+FROM [portfolio projects]..NashvilleHousing
+ORDER BY ParcelID;
+
+-- Join to populate missing 'PropertyAddress' values using other rows in the same table
+SELECT a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, 
+       ISNULL(a.propertyaddress, b.PropertyAddress)
+FROM [portfolio projects]..NashvilleHousing a 
+JOIN [portfolio projects]..NashvilleHousing b
+  ON a.ParcelID = b.ParcelID 
+ AND a.[UniqueID ] <> b.[UniqueID ]
+WHERE a.PropertyAddress IS NULL;
+
+-- Update missing 'PropertyAddress' with values from matching rows
+UPDATE a 
+SET propertyaddress = ISNULL(a.propertyaddress, b.PropertyAddress)
+FROM [portfolio projects]..NashvilleHousing a 
+JOIN [portfolio projects]..NashvilleHousing b
+  ON a.ParcelID = b.ParcelID 
+ AND a.[UniqueID ] <> b.[UniqueID ]
+WHERE a.PropertyAddress IS NULL;
+
+-- Select the property address after update
+SELECT PropertyAddress 
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Split 'PropertyAddress' into two parts: before and after the first comma
+SELECT 
+    SUBSTRING(propertyaddress, 1, CHARINDEX(',', propertyaddress) - 1) AS Address,
+    SUBSTRING(propertyaddress, CHARINDEX(',', propertyaddress) + 1, LEN(propertyaddress)) AS City
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Add a new column to store the split 'PropertyAddress'
+ALTER TABLE [portfolio projects]..NashvilleHousing
+ADD PropertySplitAddress NVARCHAR(255);
+
+-- Update the 'PropertySplitAddress' column with the part before the first comma
+UPDATE [portfolio projects]..NashvilleHousing
+SET PropertySplitAddress = SUBSTRING(propertyaddress, 1, CHARINDEX(',', propertyaddress) - 1);
+
+-- Add a new column to store the city part of 'PropertyAddress'
+ALTER TABLE [portfolio projects]..NashvilleHousing
+ADD PropertySplitCity NVARCHAR(255);
+
+-- Update the 'PropertySplitCity' column with the part after the first comma
+UPDATE [portfolio projects]..NashvilleHousing
+SET PropertySplitCity = SUBSTRING(propertyaddress, CHARINDEX(',', propertyaddress) + 1, LEN(propertyaddress));
+
+-- Select the split address and city
+SELECT propertysplitaddress, propertysplitcity
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Select all records
+SELECT *
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Split 'OwnerAddress' into Address, City, and State using PARSENAME
+SELECT 
+    PARSENAME(REPLACE(owneraddress, ',', '.'), 3) AS Address,
+    PARSENAME(REPLACE(owneraddress, ',', '.'), 2) AS City,
+    PARSENAME(REPLACE(owneraddress, ',', '.'), 1) AS State
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Add a new column for 'OwnerSplitAddress'
+ALTER TABLE [portfolio projects]..NashvilleHousing
+ADD OwnerSplitAddress NVARCHAR(255);
+
+-- Update the 'OwnerSplitAddress' column using PARSENAME
+UPDATE [portfolio projects]..NashvilleHousing
+SET OwnerSplitAddress = PARSENAME(REPLACE(owneraddress, ',', '.'), 3);
+
+-- Add a new column for 'OwnerSplitCity'
+ALTER TABLE [portfolio projects]..NashvilleHousing
+ADD OwnerSplitCity NVARCHAR(255);
+
+-- Update the 'OwnerSplitCity' column using PARSENAME
+UPDATE [portfolio projects]..NashvilleHousing
+SET OwnerSplitCity = PARSENAME(REPLACE(owneraddress, ',', '.'), 2);
+
+-- Add a new column for 'OwnerSplitState'
+ALTER TABLE [portfolio projects]..NashvilleHousing
+ADD OwnerSplitState NVARCHAR(255);
+
+-- Update the 'OwnerSplitState' column using PARSENAME
+UPDATE [portfolio projects]..NashvilleHousing
+SET OwnerSplitState = PARSENAME(REPLACE(owneraddress, ',', '.'), 1);
+
+-- Count the occurrences of 'SoldAsVacant' values and group by this column
+SELECT DISTINCT(soldasvacant), COUNT(soldasvacant)
+FROM [portfolio projects]..NashvilleHousing
+GROUP BY SoldAsVacant
+ORDER BY 2;
+
+-- Transform 'SoldAsVacant' values: 'Y' to 'Yes' and 'N' to 'No'
+SELECT soldasvacant,
+    CASE 
+        WHEN soldasvacant = 'Y' THEN 'Yes'
+        WHEN soldasvacant = 'N' THEN 'No'
+        ELSE soldasvacant 
+    END AS SoldAsVacantFormatted
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Update 'SoldAsVacant' with formatted values
+UPDATE [portfolio projects]..NashvilleHousing
+SET SoldAsVacant = CASE 
+        WHEN soldasvacant = 'Y' THEN 'Yes'
+        WHEN soldasvacant = 'N' THEN 'No'
+        ELSE soldasvacant 
+    END;
+
+-- Create a CTE to identify and eliminate duplicate rows
+WITH rowNumCTE AS (
+    SELECT *, 
+        ROW_NUMBER() OVER (
+            PARTITION BY ParcelID, PropertyAddress, SalePrice, SaleDate, LegalReference
+            ORDER BY UniqueID 
+        ) AS row_num
+    FROM [portfolio projects]..NashvilleHousing
+)
+SELECT *
+FROM rowNumCTE
+WHERE row_num > 1;
+
+-- Select all records for reference
+SELECT *
+FROM [portfolio projects]..NashvilleHousing;
+
+-- Drop 'PropertyAddress', 'TaxDistrict', and 'OwnerAddress' columns
+ALTER TABLE [portfolio projects]..NashvilleHousing
+DROP COLUMN propertyaddress, taxdistrict, owneraddress;
+
+-- Drop the 'SaleDate' column
+ALTER TABLE [portfolio projects]..NashvilleHousing
+DROP COLUMN saledate;
