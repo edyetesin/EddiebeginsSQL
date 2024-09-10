@@ -40,9 +40,20 @@ Here is a list of the queries included in the file:
 9. Find books borrowed by a specific borrower (e.g., 'John')  
    Retrieves the list of books borrowed by a particular borrower.
 
-How to Use this query
-- Load the SQL queries from the library_sql_queries.txt file into your SQL environment.
-- Execute the queries individually or as needed depending on the operation you want to perform on the database.
+
+
+Nashville Housing SQL Project
+
+This project contains SQL scripts that manipulate and process data from the NashvilleHousing dataset. The operations performed include:
+
+- Data conversion (e.g., converting sale dates to a DATE type)
+- Splitting addresses into separate columns for city and state
+- Handling missing property addresses
+- Cleaning data for fields like SoldAsVacant
+- Managing duplicates using Common Table Expressions (CTEs)
+- Updating and removing unnecessary columns
+
+The SQL queries are organized for ease of use and can be applied to datasets with similar structures.
 
 Contact
 For any questions or further details, feel free to reach out through GitHub Issues or contact me directly ediomoetesin40@gmail.com
